@@ -73,7 +73,7 @@ const cleanDist = (callback) => {
 const browserSyncInit = (callback) => {
     browserSync.init({
         server: {
-            baseDir: [paths.dist.base.dir, paths.src.base.dir, paths.base.base.dir]
+            baseDir: [paths.dist.base.dir, paths.src.base.dir, paths.base.base.dir],
         }
     })
     callback()
@@ -84,8 +84,8 @@ const browserSyncReload = (callback) => {
 }
 const serve = () => {
     watch(paths.src.scss.files, series(compileScss, browserSyncReload))
-    watch([paths.src.js.dir], series(compileJs(), browserSyncReload))
-    watch([paths.src.js.pages], series(compilePageJs(), browserSyncReload))
+    watch([paths.src.js.dir], series(compileJs, browserSyncReload))
+    watch([paths.src.js.pages], series(compilePageJs, browserSyncReload))
     watch(paths.src.pug.files, series(compilePug, browserSyncReload))
 }
 
