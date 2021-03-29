@@ -110,16 +110,14 @@ const compileScss = () => src(paths.src.scss.main)
     )
     .pipe(sourcemaps.write("./"))
     .pipe(dest(paths.dist.css.dir));
-const compileJs = () => {
-    src(paths.src.js.main)
-        .pipe(uglify())
-        .pipe(dest(paths.dist.js.dir));
-}
-const compilePageJs = () => {
-    src(paths.src.js.files)
-        .pipe(uglify())
-        .pipe(dest(paths.dist.js.pages));
-}
+
+const compileJs = () => src(paths.src.js.main)
+    .pipe(uglify())
+    .pipe(dest(paths.dist.js.dir));
+
+const compilePageJs = () => src(paths.src.js.files)
+    .pipe(uglify())
+    .pipe(dest(paths.dist.js.pages));
 
 const copyLibs = () => src(npmDist(), {
     base: paths.base.node.dir
@@ -127,9 +125,12 @@ const copyLibs = () => src(npmDist(), {
     path.dirname = path.dirname.replace(/\/dist/, '').replace(/\\dist/, '');
 })).pipe(dest(paths.dist.libs.dir));
 
+
 exports.build = series(
     parallel(cleanLock, cleanDist, copyLibs),
     compileScss,
+    compileJs,
+    compilePageJs,
     compilePug,
 )
 exports.default = series(
