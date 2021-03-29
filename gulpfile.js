@@ -9,7 +9,9 @@ const {series, src, dest, parallel, watch} = require('gulp'),
     sass = require('gulp-sass'),
     autoprefixer = require('gulp-autoprefixer'),
     cleanCSS = require('gulp-clean-css'),
-    uglify = require('gulp-uglify')
+    uglify = require('gulp-uglify'),
+    imagemin = require('gulp-imagemin'),
+    cache = require('gulp-cache')
 
 
 const paths = {
@@ -43,7 +45,15 @@ const paths = {
             pages: './src/js/pages',
             files: './src/js/pages/*.js',
             dir: './src/js'
-        }
+        },
+        images: {
+            dir: './src/images',
+            files: './src/images/**/*'
+        },
+        fonts: {
+            dir: './src/fonts',
+            files: './src/fonts/**/*'
+        },
     },
     dist: {
         base: {
@@ -59,6 +69,12 @@ const paths = {
         js: {
             dir: './dist/assets/js',
             pages: './dist/assets/js/pages',
+        },
+        images: {
+            dir: './dist/assets/images',
+        },
+        fonts: {
+            dir: './dist/assets/fonts',
         },
     }
 }
@@ -125,6 +141,16 @@ const copyLibs = () => src(npmDist(), {
     path.dirname = path.dirname.replace(/\/dist/, '').replace(/\\dist/, '');
 })).pipe(dest(paths.dist.libs.dir));
 
+const copyImages = () => src(`${paths.src.images.files}.+(png|jpg|jpeg|gif|svg)`)
+    .pipe(cache(imagemin({
+        interlaced: true
+    })))
+    .pipe(dest(paths.dist.images.dir))
+
+const copyFonts = () => src(`${paths.src.fonts.files}`)
+    .pipe(dest(paths.dist.fonts.dir))
+
+
 
 exports.build = series(
     parallel(cleanLock, cleanDist, copyLibs),
@@ -134,6 +160,6 @@ exports.build = series(
     compilePug,
 )
 exports.default = series(
-    parallel(cleanLock, cleanDist, copyLibs, compileScss, compileJs, compilePageJs, compilePug),
+    parallel(cleanLock, cleanDist, copyLibs,copyImages,copyFonts, compileScss, compileJs, compilePageJs, compilePug),
     parallel(browserSyncInit, serve)
 )
