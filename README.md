@@ -4,9 +4,9 @@
 
 - Run ``yarn install`` or ``npm run install``
 
-## II. Run Serve
+## II. Run Development
 
-- Run ``yarn serve`` or ``npm run serve``
+- Run ``yarn start`` or ``npm run start``
 
 ## III. Build
 
