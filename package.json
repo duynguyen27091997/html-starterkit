@@ -24,7 +24,8 @@
     "gulp-replace": "^1.0.0",
     "gulp-sass": "^4.1.0",
     "gulp-sourcemaps": "^3.0.0",
-    "gulp-uglify": "^3.0.2"
+    "gulp-uglify": "^3.0.2",
+    "gulp-useref": "^5.0.0"
   },
   "dependencies": {
     "bootstrap": "^4.6.0",
@@ -32,7 +33,7 @@
     "select2": "^4.1.0-rc.0"
   },
   "scripts": {
-    "serve": "node ./node_modules/gulp/bin/gulp.js",
+    "start": "node ./node_modules/gulp/bin/gulp.js",
     "build": "node ./node_modules/gulp/bin/gulp.js build"
   }
 }
