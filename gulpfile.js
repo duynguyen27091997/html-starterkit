@@ -146,8 +146,8 @@ const buildScss = () => src(paths.src.scss.main)
     .pipe(sass().on('error', sass.logError))
     .pipe(autoprefixer())
     .pipe(replace(/url\((?:"|'|)([\w\d_\-\/.]+.(?:png|svg|jpg|jpeg|gif|ttf|eot|eot\?#iefix|woff2|woff))(?:"|'|)\)/gi, function (match, p1) {
-        let imgPath = p1.replace(/\.\.\//g, '')
-        return `url(../${imgPath})`;
+        let path = p1.replace(/\.\.\//g, '')
+        return `url(../${path})`;
     }))
     .pipe(
         rename({
