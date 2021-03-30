@@ -221,4 +221,4 @@ exports.default = series(
     compilePug,
     parallel(browserSyncInit, serve)
 )
-exports.clean = parallel(cleanDist,cleanSrcBuild);
+exports.clean = parallel(cleanLock,cleanDist,cleanSrcBuild);
