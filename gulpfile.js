@@ -1,3 +1,6 @@
+const path = require('path'),
+    fs = require('fs');
+
 const {series, src, dest, parallel, watch} = require('gulp'),
     npmDist = require('gulp-npm-dist'),
     rename = require('gulp-rename'),
@@ -68,6 +71,7 @@ const paths = {
     dist: {
         base: {
             files: './dist/**/*',
+            assets: './dist/assets',
             dir: './dist'
         },
         libs: {
@@ -89,6 +93,18 @@ const paths = {
     }
 }
 
+// function helper
+const syncFile = (filePath) => {
+    const pwd = path.dirname(__filename);
+    const source = path.join(pwd, paths.src.base.dir, filePath)
+    const dest = path.join(pwd, paths.dist.base.assets, filePath)
+    const destDir = path.dirname(dest)
+    fs.stat(destDir, (err) => {
+        if (err) fs.mkdirSync(destDir,{ recursive: true })
+        fs.copyFileSync(source, dest)
+    })
+}
+
 const cleanLock = (callback) => {
     del.sync(paths.base.lock.files)
     callback()
@@ -101,6 +117,7 @@ const cleanDist = (callback) => {
 const cleanSrcBuild = (callback) => {
     del.sync(paths.src.css.dir)
     del.sync(paths.src.libs.dir)
+    del.sync(`${paths.src.base.dir}/*.html`)
     callback()
 }
 const browserSyncInit = (callback) => {
@@ -125,6 +142,7 @@ const compilePug = () => src(paths.src.pug.main, {
     base: paths.src.pug.dir,
 }).pipe(plumber())
     .pipe(pug({
+        doctype: 'html',
         pretty: true
     }))
     .pipe(dest(paths.src.base.dir))
@@ -147,6 +165,7 @@ const buildScss = () => src(paths.src.scss.main)
     .pipe(autoprefixer())
     .pipe(replace(/url\((?:"|'|)([\w\d_\-\/.]+.(?:png|svg|jpg|jpeg|gif|ttf|eot|eot\?#iefix|woff2|woff))(?:"|'|)\)/gi, function (match, p1) {
         let path = p1.replace(/\.\.\//g, '')
+        syncFile(path)
         return `url(../${path})`;
     }))
     .pipe(
@@ -183,13 +202,18 @@ const copyFonts = () => src(`${paths.src.fonts.files}`)
 
 const useRef = () => src(`${paths.src.base.dir}/*.html`)
     .pipe(useref())
+    //resolve images path
+    .pipe(replace(/src=(?:"|'|)([\w\d_\-\/.]+.(?:png|svg|jpg|jpeg|gif))(?:"|'|)/gi, function (match, path) {
+        syncFile(path)
+        return `src="assets/${path}"`;
+    }))
     .pipe(gulpif('*.js', uglify()))
     .pipe(gulpif('*.css', minifyCss()))
     .pipe(dest(paths.dist.base.dir));
 
 exports.build = series(
-    parallel(cleanLock, cleanDist),
-    parallel(buildScss, copyImages, copyFonts),
+    parallel(cleanLock, cleanDist,cleanSrcBuild, copyLibs),
+    parallel(buildScss,/* copyImages, copyFonts*/),
     series(compilePug, useRef),
 )
 exports.default = series(
@@ -197,3 +221,4 @@ exports.default = series(
     compilePug,
     parallel(browserSyncInit, serve)
 )
+exports.clean = parallel(cleanDist,cleanSrcBuild);

@@ -34,6 +34,7 @@
   },
   "scripts": {
     "start": "node ./node_modules/gulp/bin/gulp.js",
+    "clean": "node ./node_modules/gulp/bin/gulp.js clean",
     "build": "node ./node_modules/gulp/bin/gulp.js build"
   }
 }
