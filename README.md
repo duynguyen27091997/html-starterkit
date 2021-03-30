@@ -2,11 +2,11 @@
 
 ## I. Installation
 
-- Run ``yarn install`` or ``npm run install``
+- Run ``yarn`` or ``npm install``
 
 ## II. Run Development
 
-- Run ``yarn start`` or ``npm run start``
+- Run ``yarn start`` or ``npm start``
 
 ## III. Build
 
